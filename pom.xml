@@ -60,6 +60,11 @@
             
             <!-- Third party libraries -->
             <dependency>
+                <groupId>com.watchrabbit</groupId>
+                <artifactId>crawler-driver</artifactId>
+                <version>0.8.0</version>
+            </dependency>
+            <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
                 <version>1.7.1</version>
@@ -86,6 +91,11 @@
             </dependency>
             
             <!-- Custom libraries -->
+            <dependency>
+                <artifactId>scanner-attacker</artifactId>
+                <groupId>com.watchrabbit</groupId>
+                <version>${project.version}</version>
+            </dependency>
            
         </dependencies>
     </dependencyManagement>
@@ -268,5 +278,8 @@
             </plugins>
         </pluginManagement>
     </build>
-    
+    <modules>
+        <module>scanner-supervisor</module>
+        <module>scanner-attacker</module>
+    </modules>
 </project>
