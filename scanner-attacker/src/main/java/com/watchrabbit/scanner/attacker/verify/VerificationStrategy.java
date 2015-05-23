@@ -1,5 +1,6 @@
 package com.watchrabbit.scanner.attacker.verify;
 
+import com.watchrabbit.scanner.attacker.model.Vulnerability;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 /**
@@ -8,5 +9,5 @@ import org.openqa.selenium.remote.RemoteWebDriver;
  */
 public interface VerificationStrategy {
 
-    int verify(RemoteWebDriver driver, long loadMilisec);
+    Vulnerability verify(RemoteWebDriver driver, long loadMilisec);
 }
