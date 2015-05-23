@@ -1,5 +1,7 @@
 package com.watchrabbit.scanner.supervisor.model;
 
+import com.watchrabbit.scanner.attacker.model.Vulnerability;
+
 /**
  *
  * @author Mariusz
@@ -8,7 +10,11 @@ public class AttackResult {
 
     private AttackData attackData;
 
-    private int result;
+    private String resultAddress;
+
+    private boolean formSent;
+
+    private Vulnerability vulnerability;
 
     public AttackData getAttackData() {
         return attackData;
@@ -18,12 +24,28 @@ public class AttackResult {
         this.attackData = attackData;
     }
 
-    public int getResult() {
-        return result;
+    public String getResultAddress() {
+        return resultAddress;
     }
 
-    public void setResult(int result) {
-        this.result = result;
+    public void setResultAddress(String resultAddress) {
+        this.resultAddress = resultAddress;
+    }
+
+    public boolean isFormSent() {
+        return formSent;
+    }
+
+    public void setFormSent(boolean formSent) {
+        this.formSent = formSent;
+    }
+
+    public Vulnerability getVulnerability() {
+        return vulnerability;
+    }
+
+    public void setVulnerability(Vulnerability vulnerability) {
+        this.vulnerability = vulnerability;
     }
 
     public static class Builder {
@@ -39,8 +61,18 @@ public class AttackResult {
             return this;
         }
 
-        public Builder withResult(final int result) {
-            this.item.result = result;
+        public Builder withResultAddress(final String resultAddress) {
+            this.item.resultAddress = resultAddress;
+            return this;
+        }
+
+        public Builder withFormSent(final boolean formSent) {
+            this.item.formSent = formSent;
+            return this;
+        }
+
+        public Builder withVulnerability(final Vulnerability vulnerability) {
+            this.item.vulnerability = vulnerability;
             return this;
         }
 

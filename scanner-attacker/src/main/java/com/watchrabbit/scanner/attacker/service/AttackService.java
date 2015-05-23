@@ -8,7 +8,5 @@ import com.watchrabbit.scanner.attacker.model.Attack;
  */
 public interface AttackService {
 
-    Attack getRandomXSSAttack();
-
-    Attack getRandomInjectionAttack();
+    Attack getRandomAttack();
 }

@@ -3,8 +3,12 @@ package com.watchrabbit.scanner.supervisor.service;
 import com.watchrabbit.crawler.driver.factory.RemoteWebDriverFactory;
 import com.watchrabbit.scanner.supervisor.ContextTestBase;
 import com.watchrabbit.scanner.supervisor.exception.InvalidFormStructureException;
+import com.watchrabbit.scanner.supervisor.model.AttackData;
+import com.watchrabbit.scanner.supervisor.model.AttackResult;
 import com.watchrabbit.scanner.supervisor.model.Form;
 import com.watchrabbit.scanner.supervisor.strategy.FormDataGeneratorStrategy;
+import com.watchrabbit.scanner.supervisor.strategy.ResultProcessingStrategy;
+import java.net.URISyntaxException;
 import static java.util.Arrays.asList;
 import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,8 +33,17 @@ public class FormAnalyzerServiceIT extends ContextTestBase {
     @Autowired
     FormDataGeneratorStrategy formDataGeneratorStrategy;
 
+    @Autowired
+    AttackGeneratorService attackGeneratorService;
+
+    @Autowired
+    AttackerService attackerService;
+
+    @Autowired
+    ResultProcessingStrategy resultProcessingStrategy;
+
     @Test
-    public void should() throws InvalidFormStructureException {
+    public void shouldAnalyzeForm() throws InvalidFormStructureException {
         RemoteWebDriver driver = firefoxFactory.produceDriver();
         try {
             driver.get("https://reg.ebay.pl/reg/FullReg");
@@ -40,6 +53,29 @@ public class FormAnalyzerServiceIT extends ContextTestBase {
             formDataGeneratorStrategy.generateFormData(prepareStructure, asList("Test"));
 
             assertThat(prepareStructure.getFields()).isNotEmpty();
+        } finally {
+            firefoxFactory.returnWebDriver(driver);
+        }
+
+    }
+
+    @Test
+    public void shouldPerformAttacks() throws InvalidFormStructureException, URISyntaxException {
+        RemoteWebDriver driver = firefoxFactory.produceDriver();
+        try {
+            driver.get("https://ssl.allegro.pl/fnd/registration/");
+            List<WebElement> findElements = driver.findElements(By.xpath("//form"));
+
+            Form prepareStructure = formAnalyzeService.prepareStructure(findElements.get(0));
+            formDataGeneratorStrategy.generateFormData(prepareStructure, asList("Test"));
+
+            AttackData prepareData = attackGeneratorService.prepareData("adsa1232", prepareStructure);
+
+            AttackResult attackResult = attackerService.performAttack("https://ssl.allegro.pl/fnd/registration/", driver, prepareData);
+
+            resultProcessingStrategy.onTestComplete("adsa1232", "https://ssl.allegro.pl/fnd/registration/", (attackResult));
+            assertThat(prepareStructure.getFields()).isNotEmpty();
+            assertThat(attackResult.isFormSent()).isFalse();
         } finally {
             firefoxFactory.returnWebDriver(driver);
         }

@@ -25,7 +25,9 @@ import com.watchrabbit.scanner.supervisor.strategy.ContentBasedValueGenerator;
 import com.watchrabbit.scanner.supervisor.strategy.EmailGenerator;
 import com.watchrabbit.scanner.supervisor.strategy.FallbackValueGeneratorStrategy;
 import com.watchrabbit.scanner.supervisor.strategy.FormDataGeneratorStrategy;
+import com.watchrabbit.scanner.supervisor.strategy.LoggerResultProcessingStrategy;
 import com.watchrabbit.scanner.supervisor.strategy.PasswordGenerator;
+import com.watchrabbit.scanner.supervisor.strategy.ResultProcessingStrategy;
 import com.watchrabbit.scanner.supervisor.strategy.UrlGenerator;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -70,6 +72,12 @@ public class SupervisorServiceConfig {
     @ConditionalOnMissingBean
     UrlGenerator urlGenerator() {
         return new BasicUrlGenerator();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    ResultProcessingStrategy resultProcessingStrategy() {
+        return new LoggerResultProcessingStrategy();
     }
 
 }

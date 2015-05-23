@@ -7,6 +7,7 @@ import com.watchrabbit.scanner.supervisor.model.AttackResult;
 import com.watchrabbit.scanner.supervisor.model.Form;
 import com.watchrabbit.scanner.supervisor.strategy.FallbackValueGeneratorStrategy;
 import com.watchrabbit.scanner.supervisor.strategy.FormDataGeneratorStrategy;
+import com.watchrabbit.scanner.supervisor.strategy.ResultProcessingStrategy;
 import static java.util.Arrays.asList;
 import java.util.List;
 import static java.util.stream.Collectors.toList;
@@ -27,7 +28,7 @@ public class SupervisorServiceImpl implements SupervisorService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SupervisorServiceImpl.class);
 
-    private static final List<String> ATTACT_VECTOR_TYPES = asList("email", "hidden", "password", "search", "text", "url");
+    private static final List<String> ATTACT_VECTOR_TYPES = asList("search", "text", "url");
 
     @Autowired
     FallbackValueGeneratorStrategy fallbackValueGeneratorStrategy;
@@ -48,7 +49,7 @@ public class SupervisorServiceImpl implements SupervisorService {
     AttackerService attackerService;
 
     @Autowired
-    ResultService resultService;
+    ResultProcessingStrategy resultProcessingStrategy;
 
     @Override
     public void inspectSite(String addressId, String address, RemoteWebDriver driver) {
@@ -77,6 +78,8 @@ public class SupervisorServiceImpl implements SupervisorService {
     private int countForms(RemoteWebDriver driver) {
         return driver.findElements(By.xpath("//form")).stream()
                 .filter(form -> form.findElements(By.xpath(".//input")).stream()
+                        .filter(field -> field.isDisplayed())
+                        .filter(field -> field.isEnabled())
                         .anyMatch(input -> isAnAttackVector(input))
                 ).collect(toList())
                 .size();
@@ -93,13 +96,12 @@ public class SupervisorServiceImpl implements SupervisorService {
         WebElement form = driver.findElement(By.xpath("//form[" + formNo + "]"));
         Form formStructure = formAnalyzeService.prepareStructure(form);
         formDataGeneratorStrategy.generateFormData(formStructure, values);
-        List<AttackData> attacksDatas = attackGeneratorService.prepareData(addressId, formStructure);
-        List<AttackResult> results = attacksDatas.stream()
-                .map(data -> {
-                    loadPage(address, driver);
-                    return attackerService.performAttack(driver, data);
-                }).collect(toList());
-        resultService.onTestComplete(addressId, address, results);
+        AttackData data = attackGeneratorService.prepareData(addressId, formStructure);
+
+        loadPage(address, driver);
+        AttackResult result = attackerService.performAttack(address, driver, data);
+
+        resultProcessingStrategy.onTestComplete(addressId, address, result);
     }
 
 }

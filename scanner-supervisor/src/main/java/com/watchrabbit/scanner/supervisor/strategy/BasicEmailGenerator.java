@@ -12,7 +12,7 @@ public class BasicEmailGenerator implements EmailGenerator {
 
     private final Random random = new Random();
 
-    private static final List<String> domains = asList("gmail.com", "yahoo.com", "facebook.com", "foomail.com");
+    private static final List<String> domains = asList("gmail.com", "yahoo.com", "facebook.com");
 
     private static final List<String> names = asList("johnsmith", "mary.cooper", "leonard", "joseph.moody");
 
@@ -21,7 +21,7 @@ public class BasicEmailGenerator implements EmailGenerator {
         String name = selectName();
         int number = selectNumber();
         String domain = selectDomain();
-        return name + number + domain;
+        return name + number + "@" + domain;
     }
 
     private String selectName() {

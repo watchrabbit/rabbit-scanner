@@ -2,7 +2,6 @@ package com.watchrabbit.scanner.supervisor.service;
 
 import com.watchrabbit.scanner.supervisor.model.AttackData;
 import com.watchrabbit.scanner.supervisor.model.Form;
-import java.util.List;
 
 /**
  *
@@ -10,5 +9,5 @@ import java.util.List;
  */
 public interface AttackGeneratorService {
 
-    List<AttackData> prepareData(String pageId, Form form);
+    AttackData prepareData(String pageId, Form form);
 }

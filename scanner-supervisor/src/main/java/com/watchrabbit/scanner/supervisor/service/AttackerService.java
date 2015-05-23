@@ -10,5 +10,5 @@ import org.openqa.selenium.remote.RemoteWebDriver;
  */
 public interface AttackerService {
 
-    AttackResult performAttack(RemoteWebDriver driver, AttackData attackData);
+    AttackResult performAttack(String originalAdress, RemoteWebDriver driver, AttackData attackData);
 }

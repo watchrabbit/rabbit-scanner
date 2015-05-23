@@ -10,7 +10,7 @@ public class BasicPasswordGenerator implements PasswordGenerator {
 
     @Override
     public String generatePassword() {
-        return RandomStringUtils.randomAscii(8);
+        return RandomStringUtils.randomAlphanumeric(6) + "a5";
     }
 
 }

@@ -13,3 +13,4 @@ hs_err_pid*
 /nb-configuration.xml
 /scanner-supervisor/target/
 /scanner-attacker/target/
+/target/
