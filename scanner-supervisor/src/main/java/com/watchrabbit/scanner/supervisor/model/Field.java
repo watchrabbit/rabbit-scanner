@@ -12,6 +12,8 @@ public class Field {
 
     private String label;
 
+    private String placeholder;
+
     private ElementType elementType;
 
     private FieldType fieldType;
@@ -19,14 +21,6 @@ public class Field {
     private String value;
 
     private Formality formality;
-
-    public Formality getFormality() {
-        return formality;
-    }
-
-    public void setFormality(Formality formality) {
-        this.formality = formality;
-    }
 
     public WebElement getField() {
         return field;
@@ -42,6 +36,14 @@ public class Field {
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    public String getPlaceholder() {
+        return placeholder;
+    }
+
+    public void setPlaceholder(String placeholder) {
+        this.placeholder = placeholder;
     }
 
     public ElementType getElementType() {
@@ -68,6 +70,14 @@ public class Field {
         this.value = value;
     }
 
+    public Formality getFormality() {
+        return formality;
+    }
+
+    public void setFormality(Formality formality) {
+        this.formality = formality;
+    }
+
     public static class Builder {
 
         private final Field item;
@@ -86,6 +96,11 @@ public class Field {
             return this;
         }
 
+        public Builder withPlaceholder(final String placeholder) {
+            this.item.placeholder = placeholder;
+            return this;
+        }
+
         public Builder withElementType(final ElementType elementType) {
             this.item.elementType = elementType;
             return this;
@@ -98,6 +113,11 @@ public class Field {
 
         public Builder withValue(final String value) {
             this.item.value = value;
+            return this;
+        }
+
+        public Builder withFormality(final Formality formality) {
+            this.item.formality = formality;
             return this;
         }
 

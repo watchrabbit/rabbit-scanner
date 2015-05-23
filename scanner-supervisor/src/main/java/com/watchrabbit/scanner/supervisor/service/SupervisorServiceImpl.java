@@ -60,7 +60,7 @@ public class SupervisorServiceImpl implements SupervisorService {
         if (count > 0) {
             List<String> values = fallbackValueGeneratorStrategy.prepareValues(driver);
 
-            for (int formNo = 1; formNo <= count; formNo++) {
+            for (int formNo = 0; formNo < count; formNo++) {
                 try {
                     inspectForm(addressId, formNo, address, driver, values);
                 } catch (InvalidFormStructureException ex) {
@@ -77,12 +77,16 @@ public class SupervisorServiceImpl implements SupervisorService {
 
     private int countForms(RemoteWebDriver driver) {
         return driver.findElements(By.xpath("//form")).stream()
-                .filter(form -> form.findElements(By.xpath(".//input")).stream()
-                        .filter(field -> field.isDisplayed())
-                        .filter(field -> field.isEnabled())
-                        .anyMatch(input -> isAnAttackVector(input))
-                ).collect(toList())
+                .filter(this::isOpenForAttack)
+                .collect(toList())
                 .size();
+    }
+
+    private boolean isOpenForAttack(WebElement form) {
+        return form.findElements(By.xpath(".//input")).stream()
+                .filter(field -> field.isDisplayed())
+                .filter(field -> field.isEnabled())
+                .anyMatch(input -> isAnAttackVector(input));
     }
 
     private boolean isAnAttackVector(WebElement input) {
@@ -91,17 +95,21 @@ public class SupervisorServiceImpl implements SupervisorService {
 
     private void inspectForm(String addressId, int formNo, String address, RemoteWebDriver driver, List<String> values) throws InvalidFormStructureException {
         LOGGER.debug("Inspecting form number {} on site {}", formNo, address);
-        loadPage(address, driver);
+        try {
+            loadPage(address, driver);
 
-        WebElement form = driver.findElement(By.xpath("//form[" + formNo + "]"));
-        Form formStructure = formAnalyzeService.prepareStructure(form);
-        formDataGeneratorStrategy.generateFormData(formStructure, values);
-        AttackData data = attackGeneratorService.prepareData(addressId, formStructure);
+            WebElement form = driver.findElements(By.xpath("//form")).get(formNo);
+            if (isOpenForAttack(form)) {
+                Form formStructure = formAnalyzeService.prepareStructure(form);
+                formDataGeneratorStrategy.generateFormData(formStructure, values);
+                AttackData data = attackGeneratorService.prepareData(addressId, formStructure);
 
-        loadPage(address, driver);
-        AttackResult result = attackerService.performAttack(address, driver, data);
-
-        resultProcessingStrategy.onTestComplete(addressId, address, result);
+                AttackResult result = attackerService.performAttack(address, driver, data);
+                resultProcessingStrategy.onTestComplete(addressId, address, result);
+            }
+        } catch (Exception ex) {
+            LOGGER.error("Failed to analyze form id " + formNo, ex);
+        }
     }
 
 }

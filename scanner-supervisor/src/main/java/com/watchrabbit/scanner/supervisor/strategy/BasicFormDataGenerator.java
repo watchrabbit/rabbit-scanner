@@ -16,18 +16,18 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Mariusz
  */
 public class BasicFormDataGenerator implements FormDataGeneratorStrategy {
-    
+
     private final Random random = new Random();
-    
+
     @Autowired
     EmailGenerator emailGenerator;
-    
+
     @Autowired
     PasswordGenerator passwordGenerator;
-    
+
     @Autowired
     UrlGenerator urlGenerator;
-    
+
     @Override
     public Form generateFormData(Form form, List<String> words) {
         fillPasswordFields(form);
@@ -38,7 +38,7 @@ public class BasicFormDataGenerator implements FormDataGeneratorStrategy {
                 .forEach(field -> fillField(field, words));
         return form;
     }
-    
+
     private void fillPasswordFields(Form form) {
         List<Field> passwordInputs = form.getFields().stream()
                 .filter(field -> field.getFieldType().equals(FieldType.PASSWORD))
@@ -49,19 +49,20 @@ public class BasicFormDataGenerator implements FormDataGeneratorStrategy {
             passwordInputs.forEach(field -> field.setFormality(Formality.AVERAGE));
         }
     }
-    
+
     private void fillEmailFields(Form form) {
         List<Field> emailInputs = form.getFields().stream()
                 .filter(field -> field.getFieldType().equals(FieldType.EMAIL)
-                        || (field.getLabel() != null && field.getLabel().toLowerCase().contains("mail")))
-                .collect(toList());
+                        || (field.getLabel() != null && field.getLabel().toLowerCase().contains("mail"))
+                        || (field.getPlaceholder() != null && field.getPlaceholder().toLowerCase().contains("mail"))
+                ).collect(toList());
         if (!emailInputs.isEmpty()) {
             String email = emailGenerator.generateEmail();
             emailInputs.forEach(field -> field.setValue(email));
             emailInputs.forEach(field -> field.setFormality(Formality.HIGH));
         }
     }
-    
+
     private void fillField(Field field, List<String> words) {
         if (field.getFieldType().equals(FieldType.URL)) {
             field.setValue(urlGenerator.generateUrl());
@@ -71,9 +72,9 @@ public class BasicFormDataGenerator implements FormDataGeneratorStrategy {
             field.setFormality(Formality.LOW);
         }
     }
-    
+
     private String selectWord(List<String> words) {
         return words.get(random.nextInt(words.size()));
     }
-    
+
 }

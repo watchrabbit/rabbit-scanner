@@ -46,7 +46,7 @@ public class AttackerServiceImpl implements AttackerService {
         data.getFields().forEach(this::fillAttacked);
 
         Stopwatch stopwatch = Stopwatch.createStarted(() -> {
-            data.getForm().getSendButton().click();
+            data.getForm().getSendButton().submit();
             loaderService.waitFor(driver);
         });
         Vulnerability vulnerability = data.getVerificationStrategy()

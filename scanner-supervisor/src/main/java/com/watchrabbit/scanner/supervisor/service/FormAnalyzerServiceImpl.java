@@ -6,6 +6,7 @@ import com.watchrabbit.scanner.supervisor.model.Field;
 import com.watchrabbit.scanner.supervisor.model.FieldType;
 import com.watchrabbit.scanner.supervisor.model.Form;
 import java.util.List;
+import java.util.Optional;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
@@ -35,11 +36,14 @@ public class FormAnalyzerServiceImpl implements FormAnalyzeService {
             ElementType elementType = ElementType.parse(fieldElement.getTagName().toUpperCase());
             FieldType fieldType = FieldType.parse(fieldElement.getAttribute("type").toUpperCase());
 
+            String placeholder = fieldElement.getAttribute("placeholder");
+
             form.getFields().add(new Field.Builder()
                     .withElementType(elementType)
                     .withField(fieldElement)
                     .withFieldType(fieldType)
                     .withLabel(label)
+                    .withPlaceholder(placeholder)
                     .build()
             );
         }
@@ -54,7 +58,11 @@ public class FormAnalyzerServiceImpl implements FormAnalyzeService {
         if (!submit.isEmpty()) {
             form.setSendButton(submit.get(0));
         } else {
-            throw new InvalidFormStructureException("Cannot locate send button");
+            Optional<WebElement> findAny = formElement.findElements(By.xpath(".//input")).stream()
+                    .filter(input -> input.isDisplayed())
+                    .filter(input -> input.isEnabled())
+                    .findAny();
+            form.setSendButton(findAny.orElseThrow(() -> new InvalidFormStructureException("Cannot locate send button")));
         }
     }
 
