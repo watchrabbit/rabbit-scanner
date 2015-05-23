@@ -17,4 +17,9 @@ public class OrderServiceIT extends ContextTestBase {
     public void shouldProcessAll() {
         orderService.inspectSite("asdas", "https://github.com/");
     }
+
+    @Test
+    public void shouldProcessAll2() {
+        orderService.inspectSite("asdas", "https://soundcloud.com/");
+    }
 }
