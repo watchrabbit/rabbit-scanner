@@ -15,6 +15,8 @@
  */
 package com.watchrabbit.scanner.supervisor.model;
 
+import com.watchrabbit.scanner.generator.model.Formality;
+import org.apache.commons.lang.StringUtils;
 import org.openqa.selenium.WebElement;
 
 /**
@@ -36,6 +38,10 @@ public class Field {
     private String value;
 
     private Formality formality;
+
+    public boolean isFilled() {
+        return StringUtils.isNotBlank(value);
+    }
 
     public WebElement getField() {
         return field;

@@ -13,14 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.watchrabbit.scanner.supervisor.strategy;
+package com.watchrabbit.scanner.generator.service;
+
+import com.watchrabbit.scanner.generator.model.FieldValue;
+import java.util.List;
 
 /**
  *
  * @author Mariusz
  */
-public interface EmailGenerator {
+public interface GeneratorService {
 
-    String generateEmail();
+    FieldValue generateValue(List<String> descriptions, List<String> words);
 
+    boolean isEmail(List<String> descriptions);
+
+    boolean isPassword(List<String> descriptions);
 }

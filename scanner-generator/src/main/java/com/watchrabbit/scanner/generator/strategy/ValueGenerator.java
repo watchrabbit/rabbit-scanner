@@ -13,25 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.watchrabbit.scanner.supervisor.strategy;
+package com.watchrabbit.scanner.generator.strategy;
 
-import static java.util.Arrays.asList;
+import com.watchrabbit.scanner.generator.model.FieldValue;
 import java.util.List;
-import java.util.Random;
 
 /**
  *
  * @author Mariusz
  */
-public class BasicUrlGenerator implements UrlGenerator {
+public interface ValueGenerator {
 
-    private final Random random = new Random();
+    boolean accepts(List<String> descriptions);
 
-    private static final List<String> domains = asList("https://gmail.com", "https://yahoo.com", "https://facebook.com", "https://foomail.com");
-
-    @Override
-    public String generateUrl() {
-        return domains.get(random.nextInt(domains.size()));
-    }
-
+    FieldValue generate(List<String> descriptions, List<String> words);
 }

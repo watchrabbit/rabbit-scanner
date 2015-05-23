@@ -17,18 +17,13 @@ package com.watchrabbit.scanner.supervisor;
 
 import com.watchrabbit.crawler.driver.EnableWebDrivers;
 import com.watchrabbit.scanner.attacker.EnableAttackerService;
-import com.watchrabbit.scanner.supervisor.strategy.BasicEmailGenerator;
+import com.watchrabbit.scanner.generator.EnableGeneratorService;
 import com.watchrabbit.scanner.supervisor.strategy.BasicFormDataGenerator;
-import com.watchrabbit.scanner.supervisor.strategy.BasicPasswordGenerator;
-import com.watchrabbit.scanner.supervisor.strategy.BasicUrlGenerator;
 import com.watchrabbit.scanner.supervisor.strategy.ContentBasedValueGenerator;
-import com.watchrabbit.scanner.supervisor.strategy.EmailGenerator;
 import com.watchrabbit.scanner.supervisor.strategy.FallbackValueGeneratorStrategy;
 import com.watchrabbit.scanner.supervisor.strategy.FormDataGeneratorStrategy;
 import com.watchrabbit.scanner.supervisor.strategy.LoggerResultProcessingStrategy;
-import com.watchrabbit.scanner.supervisor.strategy.PasswordGenerator;
 import com.watchrabbit.scanner.supervisor.strategy.ResultProcessingStrategy;
-import com.watchrabbit.scanner.supervisor.strategy.UrlGenerator;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -40,6 +35,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @EnableAttackerService
+@EnableGeneratorService
 @EnableWebDrivers
 @ComponentScan
 public class SupervisorServiceConfig {
@@ -54,24 +50,6 @@ public class SupervisorServiceConfig {
     @ConditionalOnMissingBean
     FormDataGeneratorStrategy formDataGeneratorStrategy() {
         return new BasicFormDataGenerator();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    EmailGenerator emailGenerator() {
-        return new BasicEmailGenerator();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    PasswordGenerator passwordGenerator() {
-        return new BasicPasswordGenerator();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    UrlGenerator urlGenerator() {
-        return new BasicUrlGenerator();
     }
 
     @Bean

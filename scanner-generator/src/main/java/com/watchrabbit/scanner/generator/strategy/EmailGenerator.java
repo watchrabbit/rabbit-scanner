@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.watchrabbit.scanner.supervisor.strategy;
+package com.watchrabbit.scanner.generator.strategy;
 
-import org.apache.commons.lang.RandomStringUtils;
+import com.watchrabbit.scanner.generator.model.FieldValue;
+import java.util.List;
 
 /**
  *
  * @author Mariusz
  */
-public class BasicPasswordGenerator implements PasswordGenerator {
+public interface EmailGenerator {
 
-    @Override
-    public String generatePassword() {
-        return RandomStringUtils.randomAlphanumeric(6) + "a5";
-    }
+    boolean accepts(List<String> descriptions);
+
+    FieldValue generate(List<String> descriptions, List<String> words);
 
 }

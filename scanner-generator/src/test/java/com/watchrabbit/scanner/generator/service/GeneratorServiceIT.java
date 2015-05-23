@@ -13,24 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.watchrabbit.scanner.supervisor.model;
+package com.watchrabbit.scanner.generator.service;
+
+import com.watchrabbit.scanner.generator.ContextTestBase;
+import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
  * @author Mariusz
  */
-public enum Formality {
+public class GeneratorServiceIT extends ContextTestBase {
 
-    HIGH(100), AVERAGE(50), LOW(10);
+    @Autowired
+    GeneratorService generatorService;
 
-    private final Integer factor;
-
-    Formality(Integer factor) {
-        this.factor = factor;
-    }
-
-    public Integer getFactor() {
-        return factor;
+    @Test
+    public void shouldProcessAll() {
+        assertThat(generatorService).isNotNull();
     }
 
 }

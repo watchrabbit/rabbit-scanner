@@ -15,15 +15,15 @@
  */
 package com.watchrabbit.scanner.supervisor.strategy;
 
+import com.watchrabbit.scanner.generator.model.FieldValue;
+import com.watchrabbit.scanner.generator.service.GeneratorService;
 import com.watchrabbit.scanner.supervisor.model.ElementType;
 import com.watchrabbit.scanner.supervisor.model.Field;
 import com.watchrabbit.scanner.supervisor.model.FieldType;
 import com.watchrabbit.scanner.supervisor.model.Form;
-import com.watchrabbit.scanner.supervisor.model.Formality;
+import static java.util.Arrays.asList;
 import java.util.List;
-import java.util.Random;
 import static java.util.stream.Collectors.toList;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -32,64 +32,61 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class BasicFormDataGenerator implements FormDataGeneratorStrategy {
 
-    private final Random random = new Random();
-
     @Autowired
-    EmailGenerator emailGenerator;
-
-    @Autowired
-    PasswordGenerator passwordGenerator;
-
-    @Autowired
-    UrlGenerator urlGenerator;
+    GeneratorService generatorService;
 
     @Override
     public Form generateFormData(Form form, List<String> words) {
-        fillPasswordFields(form);
-        fillEmailFields(form);
+        fillPasswordFields(form, words);
+        fillEmailFields(form, words);
         form.getFields().stream()
                 .filter(field -> !field.getElementType().equals(ElementType.SELECT))
-                .filter(field -> StringUtils.isEmpty(field.getValue()))
+                .filter(field -> !field.isFilled())
                 .forEach(field -> fillField(field, words));
         return form;
     }
 
-    private void fillPasswordFields(Form form) {
+    private void fillPasswordFields(Form form, List<String> words) {
         List<Field> passwordInputs = form.getFields().stream()
-                .filter(field -> field.getFieldType().equals(FieldType.PASSWORD))
+                .filter(field -> !field.isFilled())
+                .filter(field -> generatorService.isPassword(getDescription(field)))
                 .collect(toList());
         if (!passwordInputs.isEmpty()) {
-            String password = passwordGenerator.generatePassword();
-            passwordInputs.forEach(field -> field.setValue(password));
-            passwordInputs.forEach(field -> field.setFormality(Formality.AVERAGE));
+            FieldValue password = generatorService.generateValue(getDescription(passwordInputs.get(0)), words);
+            passwordInputs.forEach(field -> field.setValue(password.getValue()));
+            passwordInputs.forEach(field -> field.setFormality(password.getFormality()));
         }
     }
 
-    private void fillEmailFields(Form form) {
+    private void fillEmailFields(Form form, List<String> words) {
         List<Field> emailInputs = form.getFields().stream()
-                .filter(field -> field.getFieldType().equals(FieldType.EMAIL)
-                        || (field.getLabel() != null && field.getLabel().toLowerCase().contains("mail"))
-                        || (field.getPlaceholder() != null && field.getPlaceholder().toLowerCase().contains("mail"))
-                ).collect(toList());
+                .filter(field -> !field.isFilled())
+                .filter(field -> generatorService.isEmail(getDescription(field)))
+                .collect(toList());
         if (!emailInputs.isEmpty()) {
-            String email = emailGenerator.generateEmail();
-            emailInputs.forEach(field -> field.setValue(email));
-            emailInputs.forEach(field -> field.setFormality(Formality.HIGH));
+            FieldValue email = generatorService.generateValue(getDescription(emailInputs.get(0)), words);
+            emailInputs.forEach(field -> field.setValue(email.getValue()));
+            emailInputs.forEach(field -> field.setFormality(email.getFormality()));
         }
+    }
+
+    private List<String> getDescription(Field field) {
+        return asList(
+                field.getFieldType().name() != null ? field.getFieldType().name().toLowerCase() : "",
+                field.getElementType().name() != null ? field.getElementType().name().toLowerCase() : "",
+                field.getLabel() != null ? field.getLabel().toLowerCase() : "",
+                field.getPlaceholder() != null ? field.getPlaceholder().toLowerCase() : ""
+        );
     }
 
     private void fillField(Field field, List<String> words) {
-        if (field.getFieldType().equals(FieldType.URL)) {
-            field.setValue(urlGenerator.generateUrl());
-            field.setFormality(Formality.AVERAGE);
-        } else if (field.getFieldType().equals(FieldType.TEXT) || field.getFieldType().equals(FieldType.OTHER)) {
-            field.setValue(selectWord(words));
-            field.setFormality(Formality.LOW);
+        if (field.getFieldType().equals(FieldType.URL)
+                || field.getFieldType().equals(FieldType.TEXT)
+                || field.getFieldType().equals(FieldType.OTHER)) {
+            FieldValue fieldValue = generatorService.generateValue(getDescription(field), words);
+            field.setValue(fieldValue.getValue());
+            field.setFormality(fieldValue.getFormality());
         }
-    }
-
-    private String selectWord(List<String> words) {
-        return words.get(random.nextInt(words.size()));
     }
 
 }

@@ -13,14 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.watchrabbit.scanner.supervisor.strategy;
+package com.watchrabbit.scanner.generator.strategy;
+
+import com.watchrabbit.scanner.generator.model.FieldValue;
+import com.watchrabbit.scanner.generator.model.Formality;
+import java.util.List;
+import java.util.Random;
 
 /**
  *
  * @author Mariusz
  */
-public interface PasswordGenerator {
+public class WordBasedGenerator implements FallbackGenerator {
 
-    String generatePassword();
+    private final Random random = new Random();
+
+    @Override
+    public FieldValue generate(List<String> descriptions, List<String> words) {
+        return new FieldValue.Builder()
+                .withFormality(Formality.LOW)
+                .withValue(words.get(random.nextInt(words.size())))
+                .build();
+    }
 
 }

@@ -96,6 +96,11 @@
                 <groupId>com.watchrabbit</groupId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <artifactId>scanner-generator</artifactId>
+                <groupId>com.watchrabbit</groupId>
+                <version>${project.version}</version>
+            </dependency>
            
         </dependencies>
     </dependencyManagement>
@@ -281,5 +286,6 @@
     <modules>
         <module>scanner-supervisor</module>
         <module>scanner-attacker</module>
+        <module>scanner-generator</module>
     </modules>
 </project>

@@ -13,14 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.watchrabbit.scanner.supervisor.strategy;
+package com.watchrabbit.scanner.generator;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import org.springframework.context.annotation.Import;
 
 /**
  *
  * @author Mariusz
  */
-public interface UrlGenerator {
-
-    String generateUrl();
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Import(GeneratorServiceConfig.class)
+@Documented
+public @interface EnableGeneratorService {
 
 }

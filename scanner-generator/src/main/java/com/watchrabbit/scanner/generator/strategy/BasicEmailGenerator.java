@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.watchrabbit.scanner.supervisor.strategy;
+package com.watchrabbit.scanner.generator.strategy;
 
+import com.watchrabbit.scanner.generator.model.FieldValue;
+import com.watchrabbit.scanner.generator.model.Formality;
 import static java.util.Arrays.asList;
 import java.util.List;
 import java.util.Random;
@@ -32,11 +34,20 @@ public class BasicEmailGenerator implements EmailGenerator {
     private static final List<String> names = asList("johnsmith", "mary.cooper", "leonard", "joseph.moody");
 
     @Override
-    public String generateEmail() {
+    public boolean accepts(List<String> descriptions) {
+        return descriptions.stream()
+                .anyMatch(description -> description.contains("mail"));
+    }
+
+    @Override
+    public FieldValue generate(List<String> descriptions, List<String> words) {
         String name = selectName();
         int number = selectNumber();
         String domain = selectDomain();
-        return name + number + "@" + domain;
+        return new FieldValue.Builder()
+                .withFormality(Formality.HIGH)
+                .withValue(name + number + "@" + domain)
+                .build();
     }
 
     private String selectName() {

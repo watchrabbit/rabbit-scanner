@@ -6,13 +6,13 @@
         <artifactId>rabbit-scanner</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-    <artifactId>scanner-supervisor</artifactId>
+    <artifactId>scanner-generator</artifactId>
     <packaging>jar</packaging>
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
-    <name>Watchrabbit - Scanner - Supervisor</name>
+    <name>Watchrabbit - Scanner - Generator</name>
     
     <dependencies>
         <dependency>
@@ -25,19 +25,15 @@
             <groupId>com.watchrabbit</groupId>
             <artifactId>crawler-driver</artifactId>
         </dependency>
-        <dependency>
-            <artifactId>scanner-attacker</artifactId>
-            <groupId>com.watchrabbit</groupId>
-        </dependency>
-        <dependency>
-            <artifactId>scanner-generator</artifactId>
-            <groupId>com.watchrabbit</groupId>
-        </dependency>
         
         <!-- Third party libraries -->
         <dependency>
             <groupId>com.watchrabbit</groupId>
             <artifactId>rabbit-commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
         </dependency>
 
         <!-- Test libraries -->
@@ -55,10 +51,6 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
         </dependency>
     </dependencies>
 </project>
