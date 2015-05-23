@@ -18,3 +18,7 @@ hs_err_pid*
 /scanner-supervisor/nb-configuration.xml
 /scanner-generator/nb-configuration.xml
 /scanner-generator/target/
+/pom.xml.versionsBackup
+/scanner-supervisor/pom.xml.versionsBackup
+/scanner-generator/pom.xml.versionsBackup
+/scanner-attacker/pom.xml.versionsBackup
