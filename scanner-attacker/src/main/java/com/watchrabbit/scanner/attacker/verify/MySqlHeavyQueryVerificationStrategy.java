@@ -13,23 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.watchrabbit.scanner.supervisor.model;
+package com.watchrabbit.scanner.attacker.verify;
 
-import com.watchrabbit.commons.exception.SystemException;
+import com.watchrabbit.scanner.attacker.model.Vulnerability;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 /**
  *
  * @author Mariusz
  */
-public enum ElementType {
+public class MySqlHeavyQueryVerificationStrategy implements VerificationStrategy {
 
-    INPUT, TEXTAREA, SELECT;
-
-    public static ElementType parse(String type) {
-        try {
-            return ElementType.valueOf(type);
-        } catch (IllegalArgumentException ex) {
-            throw new SystemException("Cannot parse to ElementType " + type);
+    @Override
+    public Vulnerability verify(RemoteWebDriver driver, long loadMilisec) {
+        if (loadMilisec > 15) {
+            return Vulnerability.VERY_HIGH;
+        } else if (loadMilisec > 10) {
+            return Vulnerability.HIGH;
+        } else if (loadMilisec > 5) {
+            return Vulnerability.AVERAGE;
+        } else {
+            return Vulnerability.VERY_LOW;
         }
     }
+
 }

@@ -1,5 +1,3 @@
-package com.watchrabbit.scanner.supervisor;
-
 /*
  * Copyright 2015 Mariusz.
  *
@@ -15,6 +13,8 @@ package com.watchrabbit.scanner.supervisor;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.watchrabbit.scanner.supervisor;
+
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.SpringApplicationConfiguration;
