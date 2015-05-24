@@ -13,31 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.watchrabbit.scanner.attacker.service;
+package com.watchrabbit.scanner.attacker.attack;
 
-import com.watchrabbit.scanner.attacker.attack.AttackFactory;
 import com.watchrabbit.scanner.attacker.model.Attack;
-import java.util.List;
-import java.util.Random;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.watchrabbit.scanner.attacker.verify.BasicXSSVerificationStrategy;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Mariusz
  */
-@Service
-public class AttackServiceImpl implements AttackService {
-
-    private final Random random = new Random();
-
-    @Autowired
-    List<AttackFactory> factories;
+@Component
+public class BassicXSSFactory implements AttackFactory {
 
     @Override
-    public Attack getRandomAttack() {
-        return factories.get(random.nextInt(factories.size()))
-                .produce();
+    public Attack produce() {
+        return new Attack.Builder()
+                .withAttackGenerator((value) -> value + "<img src=\"asd.png?\" onerror=\"window.w$ = 'xss1'\"/>")
+                .withId("xss1")
+                .withVerificationStrategy(new BasicXSSVerificationStrategy())
+                .build();
     }
 
 }

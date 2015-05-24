@@ -16,6 +16,7 @@
 package com.watchrabbit.scanner.supervisor.service;
 
 import com.watchrabbit.crawler.driver.factory.RemoteWebDriverFactory;
+import com.watchrabbit.crawler.driver.service.LoaderService;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,14 +34,23 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     SupervisorService supervisorService;
 
+    @Autowired
+    LoaderService loaderService;
+
     @Override
     public void inspectSite(String addressId, String address) {
         RemoteWebDriver driver = firefoxFactory.produceDriver();
+        loadPage(address, driver);
         try {
             supervisorService.inspectSite(addressId, address, driver);
         } finally {
             firefoxFactory.returnWebDriver(driver);
         }
+    }
+
+    private void loadPage(String address, RemoteWebDriver driver) {
+        driver.get(address);
+        loaderService.waitFor(driver);
     }
 
 }

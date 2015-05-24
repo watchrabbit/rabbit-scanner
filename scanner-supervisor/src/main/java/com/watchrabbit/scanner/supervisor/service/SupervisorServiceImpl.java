@@ -15,8 +15,6 @@
  */
 package com.watchrabbit.scanner.supervisor.service;
 
-import com.watchrabbit.crawler.driver.service.LoaderService;
-import com.watchrabbit.scanner.supervisor.exception.InvalidFormStructureException;
 import com.watchrabbit.scanner.supervisor.model.AttackData;
 import com.watchrabbit.scanner.supervisor.model.AttackResult;
 import com.watchrabbit.scanner.supervisor.model.Form;
@@ -24,8 +22,9 @@ import com.watchrabbit.scanner.supervisor.strategy.FallbackValueGeneratorStrateg
 import com.watchrabbit.scanner.supervisor.strategy.FormDataGeneratorStrategy;
 import com.watchrabbit.scanner.supervisor.strategy.ResultProcessingStrategy;
 import static java.util.Arrays.asList;
+import static java.util.Collections.shuffle;
 import java.util.List;
-import static java.util.stream.Collectors.toList;
+import java.util.Random;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -45,11 +44,10 @@ public class SupervisorServiceImpl implements SupervisorService {
 
     private static final List<String> ATTACT_VECTOR_TYPES = asList("search", "text", "url");
 
-    @Autowired
-    FallbackValueGeneratorStrategy fallbackValueGeneratorStrategy;
+    private final Random random = new Random();
 
     @Autowired
-    LoaderService loaderService;
+    FallbackValueGeneratorStrategy fallbackValueGeneratorStrategy;
 
     @Autowired
     FormAnalyzeService formAnalyzeService;
@@ -68,33 +66,15 @@ public class SupervisorServiceImpl implements SupervisorService {
 
     @Override
     public void inspectSite(String addressId, String address, RemoteWebDriver driver) {
-        loadPage(address, driver);
         LOGGER.debug("Page {} loaded", address);
-        int count = countForms(driver);
-        LOGGER.debug("Found {} forms with attack vectors on page {}", count, address);
-        if (count > 0) {
-            List<String> values = fallbackValueGeneratorStrategy.prepareValues(driver);
+        List<String> values = fallbackValueGeneratorStrategy.prepareValues(driver);
 
-            for (int formNo = 0; formNo < count; formNo++) {
-                try {
-                    inspectForm(addressId, formNo, address, driver, values);
-                } catch (InvalidFormStructureException ex) {
-                    LOGGER.error("Invalid form structure on page " + address, ex);
-                }
-            }
-        }
-    }
-
-    private void loadPage(String address, RemoteWebDriver driver) {
-        driver.get(address);
-        loaderService.waitFor(driver);
-    }
-
-    private int countForms(RemoteWebDriver driver) {
-        return driver.findElements(By.xpath("//form")).stream()
+        List<WebElement> elements = driver.findElements(By.xpath("//form"));
+        shuffle(elements);
+        elements.stream()
                 .filter(this::isOpenForAttack)
-                .collect(toList())
-                .size();
+                .findAny()
+                .ifPresent(form -> inspectForm(addressId, form, address, driver, values));
     }
 
     private boolean isOpenForAttack(WebElement form) {
@@ -108,22 +88,18 @@ public class SupervisorServiceImpl implements SupervisorService {
         return ATTACT_VECTOR_TYPES.contains(input.getAttribute("type"));
     }
 
-    private void inspectForm(String addressId, int formNo, String address, RemoteWebDriver driver, List<String> values) throws InvalidFormStructureException {
-        LOGGER.debug("Inspecting form number {} on site {}", formNo, address);
+    private void inspectForm(String addressId, WebElement form, String address, RemoteWebDriver driver, List<String> values) {
+        LOGGER.debug("Inspecting form on site {}", address);
         try {
-            loadPage(address, driver);
+            Form formStructure = formAnalyzeService.prepareStructure(form);
+            formDataGeneratorStrategy.generateFormData(formStructure, values);
+            AttackData data = attackGeneratorService.prepareData(addressId, formStructure);
 
-            WebElement form = driver.findElements(By.xpath("//form")).get(formNo);
-            if (isOpenForAttack(form)) {
-                Form formStructure = formAnalyzeService.prepareStructure(form);
-                formDataGeneratorStrategy.generateFormData(formStructure, values);
-                AttackData data = attackGeneratorService.prepareData(addressId, formStructure);
+            AttackResult result = attackerService.performAttack(address, driver, data);
+            resultProcessingStrategy.onTestComplete(addressId, address, result);
 
-                AttackResult result = attackerService.performAttack(address, driver, data);
-                resultProcessingStrategy.onTestComplete(addressId, address, result);
-            }
         } catch (Exception ex) {
-            LOGGER.error("Failed to analyze form id " + formNo, ex);
+            LOGGER.error("Failed to analyze form", ex);
         }
     }
 
