@@ -9,7 +9,7 @@ Vulnerability scanner with HTML5 / JavaScript support.
 ## Powered by [watchrabbit.com]
 
 ## Current release
-18/05/2015 rabbit-scanner **0.8.0** released! Should appear in maven central shortly.
+24/05/2015 rabbit-scanner **0.8.1** released! Should appear in maven central shortly.
  
 
 [watchrabbit.com]:http://watchrabbit.com
