@@ -18,6 +18,8 @@ package com.watchrabbit.scanner.supervisor.service;
 import com.watchrabbit.crawler.driver.factory.RemoteWebDriverFactory;
 import com.watchrabbit.crawler.driver.service.LoaderService;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +29,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class OrderServiceImpl implements OrderService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(OrderServiceImpl.class);
 
     @Autowired
     RemoteWebDriverFactory firefoxFactory;
@@ -43,8 +47,10 @@ public class OrderServiceImpl implements OrderService {
         loadPage(address, driver);
         try {
             supervisorService.inspectSite(addressId, address, driver);
-        } finally {
             firefoxFactory.returnWebDriver(driver);
+        } catch (RuntimeException ex) {
+            LOGGER.error("Catched error, closing browser", ex);
+            driver.close();
         }
     }
 
