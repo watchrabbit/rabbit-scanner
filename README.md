@@ -10,7 +10,10 @@ Vulnerability scanner with HTML5 / JavaScript support.
 
 ## Current release
 24/05/2015 rabbit-scanner **0.8.1** released! Should appear in maven central shortly.
- 
+
+## Running scanner
+In order to run scanner add depenencies to all modules of this application, and annotate your configuration class with `@EnableSupervisiorService` and `@EnableAttackerService`. Then, if you want to implement custom result processing strategy implement `ResultProcessingStrategy`. 
+As a final step add site to testing using `OrderService`.
 
 [watchrabbit.com]:http://watchrabbit.com
 [travis]:https://travis-ci.org/watchrabbit/rabbit-scanner
